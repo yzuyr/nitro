@@ -242,6 +242,10 @@ export async function configureViteDevServer(ctx: NitroPluginContext, server: Vi
       ? !!nitro.routing.routes.match(
           req.method || "",
           new URL(withBase(req.url!, nitro.options.baseURL), "http://localhost").pathname
+        ) &&
+        // Only consider it a Nitro route if it lives under api/ or routes/, not serverDir root
+        [nitro.options.apiDir || "api", nitro.options.routesDir || "routes"].some((dir) =>
+          req.url!.includes(`/${dir}/`)
         )
       : false;
     res.setHeader("vary", "sec-fetch-dest");
